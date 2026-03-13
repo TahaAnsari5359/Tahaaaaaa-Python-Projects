@@ -1,116 +1,70 @@
 from tkinter import *
 import tkinter.messagebox as tmsg
-from tkinter import filedialog
-
+import random
 root = Tk()
-root.title("Untitled - Notepad")
-root.geometry("500x600")
+root.geometry("400x500")
+root.title("Number Guessing Game")
+root.config(bg="blue")
+l1 = Label(root,bg="lightblue",text="NUMBER GUESSING GAME",font="lucida 15 bold")
+l1.pack(fill=X)
 
-file = None
+num = random.randint(1,100)
+guess = 0
 
 
+def gett():
+    global num, guess
+    try:
+        guesss = int(guess_ent.get())
+    except:
+        tmsg.showerror("ERROR","Enter a number")
+        return
 
+    guess+=1
 
-def on_closing():
-    if text_area.edit_modified():
-        ans = tmsg.askyesnocancel("Save", "Do you want to save changes before exiting?")
-        if ans:
-            file = filedialog.asksaveasfilename(initialfile="Untitled.txt", defaultextension=".txt", filetypes=[("Text file", ".txt"), ("All Files", ".*")])
-            f = open(file, "w")
-            f.write(text_area.get(1.0, END))
-            f.close()
-            root.destroy()
-        elif ans is None:
-            return
-        else: 
-            root.destroy()
+    
+    if guesss>num:
+        info_lab.config(text="Please Enter a Lower Number")
+                
+            
+    elif guesss <num:
+        info_lab.config(text="Please Enter a Higher Number")
+
     else:
-        root.destroy()
+        info_lab.config(text=f"You guessed the number {num} in {guess} guesses!")
+        tmsg.showinfo("SUCCESS",f"You guessed the number {num} in {guess} guesses!")
+        asking = tmsg.askyesno("GAME","Are You Want To Play Again ?")
+        
+        if asking == True:
+            
+            num = random.randint(1, 100)  
+            guess = 0                     
+            guess_var.set("")              
+        else:
+            root.destroy()
 
-
-
-def cutfile():
-    text_area.event_generate(("<<Cut>>"))
-
-
-def copyfile():
-    text_area.event_generate(("<<Copy>>"))
-
-def pastefile():
-    text_area.event_generate(("<<Paste>>"))
-
-def abt():
-    tmsg.showinfo("About", "This GUI Notepad - Mabe By Taha")
-
-def newfile():
-    text_area.delete(1.0, END)
-
-def openfile():
-    file = filedialog.askopenfilename(defaultextension=".txt", filetypes=[("All Files", ".*"), ("Text file", ".txt")])
-    f = open(file,)
-    text_area.insert(1.0, f.read())
-    f.close()
-    text_area.config(wrap=WORD)
+    guess_var.set("")
     
 
-
-def savefile():
-    global file
-
-    text_content = text_area.get(1.0,END)
+guess_var = StringVar()
+guess_ent = Entry(root,textvariable=guess_var,font=("lucida 15 bold"))
+guess_ent.pack(pady=20)
 
 
-    if not text_content:
-        tmsg.showinfo("Error", "Enter Some Text To Save")
-        return
-
-    if file is None:
-        file = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Text file", ".txt"), ("All Files", ".*")])
-        
-    if not file:
-        return
-        
-    with open(file, "w") as f:
-        f.write(text_content)
-        f.close()
-    tmsg.showinfo("Success", "File saved successfully")
-    
-    # f = open(file, "w")
-    # f.write(text_area.get(1.0, END))
-    # f.close()
+guess_btn = Button(root,text="GUESS",font=("lucida 13 bold"),width=20,command=gett)
+guess_btn.pack()
 
 
-Menubar = Menu(root)
-file_menu = Menu(Menubar, tearoff=0)
-file_menu.add_command(label="New", command=newfile)
-file_menu.add_command(label="open", command= openfile)
-file_menu.add_separator()
-file_menu.add_command(label="save", command= savefile)
-file_menu.add_command(label="Exit", command=quit)
-
-Menubar.add_cascade(label="File", menu=file_menu)
-
-edit_menu = Menu(Menubar, tearoff=0)
-edit_menu.add_command(label="Cut", command=cutfile)
-edit_menu.add_command(label="Copy", command=copyfile)
-edit_menu.add_command(label="Paste", command=pastefile)
-Menubar.add_cascade(label="Edit", menu=edit_menu)
-
-
-about_menu = Menu(Menubar, tearoff=0)
-about_menu.add_command(label="About", command=abt)
-Menubar.add_cascade(label="Help", menu=about_menu)
+info_lab = Label(root,bg="blue",font=("lucida 15 bold"))
+info_lab.pack(pady=20)
 
 
 
-root.config(menu=Menubar)
 
-scroll = Scrollbar(root)
-scroll.pack(side=RIGHT, fill=Y)
-text_area = Text(root , font=("lucida", 13), yscrollcommand=scroll.set, wrap=WORD)
-text_area.pack(expand=True, fill=BOTH)
-scroll.config(command=text_area.yview)
 
-root.protocol("WM_DELETE_WINDOW", on_closing)
+
+
+
+
 
 root.mainloop()
